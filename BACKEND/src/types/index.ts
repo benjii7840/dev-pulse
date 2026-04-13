@@ -1,5 +1,4 @@
 export interface IUser {
-  _id: string;
   name: string;
   email: string;
   password: string;
@@ -11,7 +10,6 @@ export interface IUser {
 }
 
 export interface IRepository {
-  _id: string;
   userId: string;
   name: string;
   owner: string;
