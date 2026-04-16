@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import authRouter from "./routes/auth.js";
 
 dotenv.config();
 
@@ -37,6 +38,8 @@ mongoose
 app.get("/", (req, res) => {
   res.json({ message: "DevPulse API running" });
 });
+
+app.use("/api/auth", authRouter);
 
 // Socket connection
 io.on("connection", (socket) => {
