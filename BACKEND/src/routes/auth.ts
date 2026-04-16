@@ -8,37 +8,53 @@ const router = express.Router();
 
 router.post("/register", async (req: AuthRequest, res: express.Response) => {
   const { name, email, password } = req.body;
+
   try {
     const existingUser = await User.findOne({ email });
+
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ name, email, password: hashedPassword });
+
+    const user = new User({
+      name,
+      email,
+      password: hashedPassword,
+    });
+
     await user.save();
-    res.status(201).json({ message: "User registered successfully" });
+
+    return res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Server error" });
   }
 });
 
 router.post("/login", async (req: AuthRequest, res: express.Response) => {
   const { email, password } = req.body;
+
   try {
     const user = await User.findOne({ email });
+
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
+
     const isMatch = await bcrypt.compare(password, user.password);
+
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
+
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET as string, {
       expiresIn: "1h",
     });
-    res.json({ token });
+
+    return res.json({ token });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -49,6 +65,9 @@ router.get(
     if (!req.user) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    res.json(req.user);
+
+    return res.json(req.user);
   },
 );
+
+export default router;
