@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import authRouter from "./routes/auth.js";
+import authRouter from "./routes/auth";
 
 dotenv.config();
 
