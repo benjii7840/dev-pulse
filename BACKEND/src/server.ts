@@ -40,6 +40,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRouter);
+app.use("/api/accounts", require("./routes/accounts").default);
 
 // Socket connection
 io.on("connection", (socket) => {
