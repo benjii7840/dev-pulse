@@ -5,6 +5,7 @@ import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import authRouter from "./routes/auth";
+import githubRouter from "./routes/github";
 
 dotenv.config();
 
@@ -41,6 +42,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/accounts", require("./routes/accounts").default);
+app.use("/api/github", githubRouter);
 
 // Socket connection
 io.on("connection", (socket) => {
