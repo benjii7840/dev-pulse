@@ -6,6 +6,7 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import authRouter from "./routes/auth";
 import githubRouter from "./routes/github";
+import reposRouter from "./routes/repos";
 
 dotenv.config();
 
@@ -42,7 +43,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/github", githubRouter);
-app.use("/api/feedback", require("./routes/feedback").default);
+app.use("/api/repos", reposRouter);
 
 // Socket connection
 io.on("connection", (socket) => {
