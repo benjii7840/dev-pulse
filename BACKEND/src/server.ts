@@ -42,6 +42,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/github", githubRouter);
+app.use("/api/feedback", require("./routes/feedback").default);
 
 // Socket connection
 io.on("connection", (socket) => {
