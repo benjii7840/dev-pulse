@@ -28,5 +28,17 @@ const authMiddleware = async (
     res.status(401).json({ message: "Invalid token" });
   }
 };
+const authMiddleware2 = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  const authHeader = req.headers.authorization;
+  console.log("Auth header:", authHeader);
+
+  const token = authHeader?.split(" ")[1];
+  console.log("Token:", token);
+  console.log("JWT_SECRET:", process.env.JWT_SECRET);
+};
 
 export default authMiddleware;

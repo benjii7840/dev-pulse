@@ -74,10 +74,10 @@ router.get("/callback", async (req: Request, res: Response) => {
     });
 
     // Redirect to frontend with token
-    res.redirect(`${process.env.FRONTEND_URL}/auth/callback?token=${token}`);
+    res.json({ token });
   } catch (error) {
     console.error("GitHub OAuth error:", error);
-    res.redirect(`${process.env.FRONTEND_URL}/login?error=github_auth_failed`);
+    res.status(500).json({ message: "GitHub auth failed" });
   }
 });
 
