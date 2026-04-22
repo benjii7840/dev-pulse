@@ -7,6 +7,7 @@ import { Server } from "socket.io";
 import authRouter from "./routes/auth";
 import githubRouter from "./routes/github";
 import reposRouter from "./routes/repos";
+import dashboardRouter from "./routes/dashboard";
 
 dotenv.config();
 
@@ -44,7 +45,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRouter);
 app.use("/api/github", githubRouter);
 app.use("/api/repos", reposRouter);
-
+app.use("/api/dashboard", dashboardRouter);
 // Socket connection
 io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
