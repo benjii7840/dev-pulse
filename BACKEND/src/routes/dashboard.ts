@@ -85,7 +85,9 @@ router.get(
           contributors: contributors.length,
         },
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Dashboard error:", error.message);
+      console.error("Full error:", error.response?.data);
       res.status(500).json({ message: "Failed to fetch dashboard data" });
     }
   },
