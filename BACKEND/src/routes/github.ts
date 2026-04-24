@@ -17,7 +17,6 @@ router.get("/callback", async (req: Request, res: Response) => {
   const { code } = req.query;
 
   try {
-    // Exchange code for access token
     const tokenResponse = await axios.post(
       "https://github.com/login/oauth/access_token",
       {
@@ -30,29 +29,24 @@ router.get("/callback", async (req: Request, res: Response) => {
 
     const githubToken = tokenResponse.data.access_token;
 
-    // Fetch GitHub user profile
     const profileResponse = await axios.get("https://api.github.com/user", {
       headers: { Authorization: `Bearer ${githubToken}` },
     });
 
     const githubProfile = profileResponse.data;
 
-    // Find or create user
     let user = await User.findOne({ githubId: githubProfile.id.toString() });
 
     if (!user) {
-      // Check if user exists with same email
       user = await User.findOne({ email: githubProfile.email });
 
       if (user) {
-        // Link GitHub to existing account
         user.githubId = githubProfile.id.toString();
         user.githubToken = githubToken;
         user.githubUsername = githubProfile.login;
         user.avatar = githubProfile.avatar_url;
         await user.save();
       } else {
-        // Create new user
         user = await User.create({
           name: githubProfile.name || githubProfile.login,
           email: githubProfile.email || `${githubProfile.login}@github.com`,
@@ -63,21 +57,20 @@ router.get("/callback", async (req: Request, res: Response) => {
         });
       }
     } else {
-      // Update token
       user.githubToken = githubToken;
       await user.save();
     }
 
-    // Create JWT token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET as string, {
       expiresIn: "7d",
     });
 
-    // Redirect to frontend with token
-    res.json({ token });
+    // ✅ FIXED REDIRECT
+    const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
+    res.redirect(`${FRONTEND_URL}/auth/callback?token=${token}`);
   } catch (error) {
     console.error("GitHub OAuth error:", error);
-    res.status(500).json({ message: "GitHub auth failed" });
+    res.redirect("http://localhost:5173/login?error=github_failed");
   }
 });
 
