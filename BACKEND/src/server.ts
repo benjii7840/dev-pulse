@@ -8,8 +8,7 @@ import authRouter from "./routes/auth";
 import githubRouter from "./routes/github";
 import reposRouter from "./routes/repos";
 import dashboardRouter from "./routes/dashboard";
-import teamsRouter from "./routes/teams.js";
-
+import teamsRouter from "./routes/teams";
 
 dotenv.config();
 
