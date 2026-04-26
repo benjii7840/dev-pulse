@@ -4,6 +4,17 @@ export interface User {
   email: string;
   githubUsername?: string;
   avatar?: string;
+  accountType: "individual" | "team";
+}
+
+export interface Team {
+  _id: string;
+  name: string;
+  ownerId: string;
+  members: string[];
+  repos: string[];
+  inviteCode: string;
+  createdAt: string;
 }
 
 export interface Repo {
