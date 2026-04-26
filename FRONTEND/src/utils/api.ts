@@ -1,4 +1,4 @@
-const BASE_URL = (import.meta as any).env.VITE_API_URL || "http://localhost:5003";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5173";
 
 const getToken = (): string | null => localStorage.getItem("token");
 
@@ -7,7 +7,8 @@ export const api = {
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       headers: { Authorization: `Bearer ${getToken()}` },
     });
-    if (!response.ok) throw new Error(`GET ${endpoint} failed: ${response.status}`);
+    if (!response.ok)
+      throw new Error(`GET ${endpoint} failed: ${response.status}`);
     return response.json();
   },
 
@@ -20,7 +21,8 @@ export const api = {
       },
       body: JSON.stringify(data),
     });
-    if (!response.ok) throw new Error(`POST ${endpoint} failed: ${response.status}`);
+    if (!response.ok)
+      throw new Error(`POST ${endpoint} failed: ${response.status}`);
     return response.json();
   },
 
@@ -29,7 +31,8 @@ export const api = {
       method: "DELETE",
       headers: { Authorization: `Bearer ${getToken()}` },
     });
-    if (!response.ok) throw new Error(`DELETE ${endpoint} failed: ${response.status}`);
+    if (!response.ok)
+      throw new Error(`DELETE ${endpoint} failed: ${response.status}`);
     return response.json();
   },
 };
