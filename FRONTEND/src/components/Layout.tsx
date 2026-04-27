@@ -7,38 +7,32 @@ const Layout = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
-
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex">
-      {/* Sidebar */}
-      <div className="w-56 bg-[#0a0a0a] border-r border-[#1f1f1f] flex flex-col fixed h-full">
+      <div className="w-52 bg-[#0a0a0a] border-r border-[#1f1f1f] flex flex-col fixed h-full">
         <div className="p-4 border-b border-[#1f1f1f]">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">D</span>
+          <Link to="/" className="flex items-center gap-2">
+            <div className="w-6 h-6 bg-blue-600 rounded-md flex items-center justify-center">
+              <span className="text-white font-bold text-xs">D</span>
             </div>
             <span className="text-white font-semibold text-sm">DevPulse</span>
-          </div>
+          </Link>
         </div>
 
-        <nav className="flex-1 p-3">
-          <div className="text-gray-600 text-xs font-medium px-2 mb-2 uppercase tracking-wider">
-            Navigation
+        <nav className="flex-1 p-3 overflow-y-auto">
+          <div className="text-gray-700 text-xs font-medium px-2 mb-2 uppercase tracking-wider">
+            Workspace
           </div>
           <Link
             to="/dashboard"
-            className={`flex items-center gap-2.5 px-2 py-1.5 rounded-lg text-sm transition mb-0.5 ${
+            className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs transition mb-0.5 ${
               location.pathname === "/dashboard"
                 ? "bg-[#1f1f1f] text-white"
-                : "text-gray-500 hover:text-white hover:bg-[#1f1f1f]"
+                : "text-gray-600 hover:text-white hover:bg-[#1a1a1a]"
             }`}
           >
             <svg
-              className="w-4 h-4"
+              className="w-3.5 h-3.5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -57,30 +51,27 @@ const Layout = ({ children }: { children: ReactNode }) => {
         <div className="p-3 border-t border-[#1f1f1f]">
           <div className="flex items-center gap-2 px-2 py-1.5 mb-1">
             {user?.avatar ? (
-              <img
-                src={user.avatar}
-                className="w-6 h-6 rounded-full"
-                alt="avatar"
-              />
+              <img src={user.avatar} className="w-5 h-5 rounded-full" alt="" />
             ) : (
-              <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
+              <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
                 <span className="text-white text-xs">{user?.name?.[0]}</span>
               </div>
             )}
-            <span className="text-gray-400 text-sm truncate">{user?.name}</span>
+            <span className="text-gray-500 text-xs truncate">{user?.name}</span>
           </div>
-
           <button
-            onClick={handleLogout}
-            className="w-full text-left px-2 py-1.5 text-gray-600 hover:text-red-400 text-sm transition rounded-lg hover:bg-[#1f1f1f]"
+            onClick={() => {
+              logout();
+              navigate("/login");
+            }}
+            className="w-full text-left px-2 py-1.5 text-gray-700 hover:text-red-400 text-xs transition rounded-lg"
           >
             Sign out
           </button>
         </div>
       </div>
 
-      {/* Main */}
-      <div className="ml-56 flex-1 p-8">{children}</div>
+      <div className="ml-52 flex-1">{children}</div>
     </div>
   );
 };

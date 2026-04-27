@@ -6,7 +6,6 @@ import Register from "./pages/Register";
 import AuthCallback from "./pages/AuthCallback";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
-import TeamDashboard from "./pages/TeamDashboard";
 import RepoDashboard from "./pages/RepoDashboard";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -48,14 +47,6 @@ const App = () => {
         element={
           <ProtectedRoute>
             <RepoDashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/team/:teamId"
-        element={
-          <ProtectedRoute>
-            <TeamDashboard />
           </ProtectedRoute>
         }
       />
