@@ -24,12 +24,12 @@ const Landing = () => {
             >
               Login
             </Link>
-            <button
-              onClick={() => (window.location.href = "/register")}
+            <Link
+              to="/register"
               className="px-4 py-2 bg-white text-red-600 rounded-md font-medium hover:bg-gray-200 transition px-6 py-3 "
             >
               Get Started
-            </button>
+            </Link>
           </div>
         </div>
       </nav>
