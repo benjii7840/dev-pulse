@@ -441,32 +441,6 @@ const Landing = () => {
           </div>
         </div>
       </footer>
-
-      {/* Tailwind Animations - Add to your global CSS or include via style tag */}
-      <style>{`
-        @keyframes float {
-          0% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
-          100% { transform: translateY(-40px) rotate(6deg); opacity: 0.7; }
-        }
-        @keyframes float-reverse {
-          0% { transform: translateY(0px) rotate(0deg); opacity: 0.2; }
-          100% { transform: translateY(40px) rotate(-6deg); opacity: 0.5; }
-        }
-        @keyframes shimmer {
-          0% { background-position: 0% 50%; }
-          100% { background-position: 200% 50%; }
-        }
-        .animate-float {
-          animation: float 8s infinite alternate ease-in-out;
-        }
-        .animate-float-reverse {
-          animation: float-reverse 12s infinite alternate ease-in-out;
-        }
-        .animate-shimmer {
-          background-size: 200% 200%;
-          animation: shimmer 3s ease infinite;
-        }
-      `}</style>
     </div>
   );
 };
