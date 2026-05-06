@@ -7,6 +7,7 @@ import AuthCallback from "./pages/AuthCallback";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import RepoDashboard from "./pages/RepoDashboard";
+import TeamDashboard from "./pages/TeamDashboard";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -47,6 +48,14 @@ const App = () => {
         element={
           <ProtectedRoute>
             <RepoDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/team/:teamId"
+        element={
+          <ProtectedRoute>
+            <TeamDashboard />
           </ProtectedRoute>
         }
       />

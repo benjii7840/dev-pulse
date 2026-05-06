@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { io } from "socket.io-client";
 import Layout from "../components/Layout";
 import { api } from "../utils/api";
 import { Team, Repo, DashboardData } from "../types";
@@ -15,12 +16,13 @@ const TeamDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [showInvite, setShowInvite] = useState(false);
   const [copied, setCopied] = useState(false);
+  const selectedRepoRef = useRef<Repo | null>(null);
 
   useEffect(() => {
     if (!teamId) return;
     Promise.all([
       api.get<Team>(`/api/teams/${teamId}`),
-      api.get<Repo[]>("/api/repos"),
+      api.get<Repo[]>(`/api/teams/${teamId}/repos`),
     ])
       .then(([teamData, repoData]) => {
         setTeam(teamData);
@@ -30,7 +32,38 @@ const TeamDashboard = () => {
       .finally(() => setLoading(false));
   }, [teamId]);
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const socket = io(import.meta.env.VITE_API_URL || "http://localhost:5003", {
+      auth: { token },
+      transports: ["websocket"],
+    });
+
+    socket.on("connect_error", (err: any) => {
+      console.error("Socket connection error:", err.message);
+    });
+
+    socket.on("repo:update", (payload: any) => {
+      setRepos((currentRepos) =>
+        currentRepos.map((repo) =>
+          repo._id === payload.repoId
+            ? { ...repo, updatedAt: payload.updatedAt ?? repo.updatedAt }
+            : repo,
+        ),
+      );
+
+      if (selectedRepoRef.current?._id === payload.repoId) {
+        loadActivity(selectedRepoRef.current);
+      }
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
   const loadActivity = async (repo: Repo) => {
+    selectedRepoRef.current = repo;
     setSelectedRepo(repo);
     setActivityLoading(true);
     try {

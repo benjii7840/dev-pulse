@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { io } from "socket.io-client";
 import Layout from "../components/Layout";
 import { api } from "../utils/api";
 import { Repo, DashboardData } from "../types";
@@ -14,6 +15,7 @@ const Dashboard = () => {
   const [name, setName] = useState("");
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState("");
+  const selectedRepoRef = useRef<Repo | null>(null);
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5003";
 
   useEffect(() => {
@@ -26,7 +28,38 @@ const Dashboard = () => {
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const socket = io(API_URL, {
+      auth: { token },
+      transports: ["websocket"],
+    });
+
+    socket.on("connect_error", (err: any) => {
+      console.error("Socket connection error:", err.message);
+    });
+
+    socket.on("repo:update", (payload: any) => {
+      setRepos((currentRepos) =>
+        currentRepos.map((repo) =>
+          repo._id === payload.repoId
+            ? { ...repo, updatedAt: payload.updatedAt ?? repo.updatedAt }
+            : repo,
+        ),
+      );
+
+      if (selectedRepoRef.current?._id === payload.repoId) {
+        loadActivity(selectedRepoRef.current);
+      }
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
   const loadActivity = async (repo: Repo) => {
+    selectedRepoRef.current = repo;
     setSelectedRepo(repo);
     setActivityLoading(true);
     try {

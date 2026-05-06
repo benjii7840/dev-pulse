@@ -3,6 +3,7 @@ import { IRepository } from "../types/index.js";
 
 export interface IRepositoryDocument extends IRepository, Document {
   githubId: number;
+  githubLastUpdatedAt?: Date;
 }
 
 const repositorySchema = new Schema<IRepositoryDocument>({
@@ -14,6 +15,7 @@ const repositorySchema = new Schema<IRepositoryDocument>({
   url: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
   githubId: { type: Number, required: true },
+  githubLastUpdatedAt: { type: Date },
 });
 
 export default mongoose.model<IRepositoryDocument>(

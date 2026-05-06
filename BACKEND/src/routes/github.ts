@@ -8,7 +8,23 @@ const router = express.Router();
 
 // Step 1 — Redirect user to GitHub
 router.get("/auth", (req: Request, res: Response) => {
-  const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&scope=repo,user`;
+  const githubClientId = process.env.GITHUB_CLIENT_ID?.trim();
+  const githubClientSecret = process.env.GITHUB_CLIENT_SECRET?.trim();
+  const frontendUrl = (process.env.FRONTEND_URL || "http://localhost:5173")
+    .trim()
+    .replace(/\/$/, "");
+
+  const redirectUri = `${frontendUrl}/auth/callback`;
+  const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${githubClientId}&scope=repo,user&redirect_uri=${encodeURIComponent(
+    redirectUri,
+  )}`;
+
+  if (!githubClientId || !githubClientSecret) {
+    console.error("GitHub OAuth env variables are missing or malformed.");
+    res.status(500).send("GitHub OAuth is not configured correctly.");
+    return;
+  }
+
   res.redirect(githubAuthUrl);
 });
 
@@ -20,8 +36,8 @@ router.get("/callback", async (req: Request, res: Response) => {
     const tokenResponse = await axios.post(
       "https://github.com/login/oauth/access_token",
       {
-        client_id: process.env.GITHUB_CLIENT_ID,
-        client_secret: process.env.GITHUB_CLIENT_SECRET,
+        client_id: process.env.GITHUB_CLIENT_ID?.trim(),
+        client_secret: process.env.GITHUB_CLIENT_SECRET?.trim(),
         code,
       },
       { headers: { Accept: "application/json" } },
@@ -106,6 +122,42 @@ router.get(
       res.json(repos);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch repos" });
+    }
+  },
+);
+
+// Get the user's latest GitHub events
+router.get(
+  "/events",
+  authMiddleware,
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const user = await User.findById(req.user._id);
+
+      if (!user?.githubToken || !user.githubUsername) {
+        res.status(400).json({ message: "GitHub not connected" });
+        return;
+      }
+
+      const eventsResponse = await axios.get(
+        `https://api.github.com/users/${user.githubUsername}/events?per_page=20`,
+        {
+          headers: { Authorization: `Bearer ${user.githubToken}` },
+        },
+      );
+
+      const events = eventsResponse.data.map((event: any) => ({
+        id: event.id,
+        type: event.type,
+        repo: event.repo.name,
+        action: event.payload.action || null,
+        createdAt: event.created_at,
+        url: event.repo?.url || null,
+      }));
+
+      res.json(events);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch GitHub events" });
     }
   },
 );

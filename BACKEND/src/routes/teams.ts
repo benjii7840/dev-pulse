@@ -1,4 +1,5 @@
 import express, { Response } from "express";
+import Repository from "../models/Repository";
 import Team from "../models/Teams";
 import authMiddleware, { AuthRequest } from "../middleware/authMiddleware";
 
@@ -62,6 +63,30 @@ router.post(
       res.json(team);
     } catch (error) {
       res.status(500).json({ message: "Failed to join team" });
+    }
+  },
+);
+
+// Get team repos
+router.get(
+  "/:id/repos",
+  authMiddleware,
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const team = await Team.findById(req.params.id);
+      if (!team) {
+        res.status(404).json({ message: "Team not found" });
+        return;
+      }
+      if (!team.members.includes(req.user._id.toString())) {
+        res.status(403).json({ message: "Not a member" });
+        return;
+      }
+
+      const repos = await Repository.find({ _id: { $in: team.repos } });
+      res.json(repos);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch team repos" });
     }
   },
 );
